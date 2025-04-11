@@ -65,3 +65,44 @@ def get_user(user_id):
         "setup_name": user.setup_name,
         "cpe": user.cpe
     })
+
+# DELETE /users/<id> – Benutzer löschen
+@api_bp.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User nicht gefunden"}), 404
+
+    db.session.delete(user)
+    db.session.commit()
+
+    return jsonify({"message": f"User mit ID {user_id} wurde gelöscht."})
+
+
+# PUT /users/<id> – Benutzer aktualisieren
+@api_bp.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User nicht gefunden"}), 404
+
+    data = request.get_json()
+
+    user.name = data.get('name', user.name)
+    user.email = data.get('email', user.email)
+    user.setup_name = data.get('setup_name', user.setup_name)
+    user.cpe = data.get('cpe', user.cpe)
+
+    db.session.commit()
+
+    return jsonify({
+        "message": "User aktualisiert",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "setup_name": user.setup_name,
+            "cpe": user.cpe
+        }
+    })
+
