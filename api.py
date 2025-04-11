@@ -50,3 +50,18 @@ def list_users():
         }
         for u in users
     ])
+
+# GET /users/<id> – Einzelnen Benutzer abrufen
+@api_bp.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User nicht gefunden"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "setup_name": user.setup_name,
+        "cpe": user.cpe
+    })
